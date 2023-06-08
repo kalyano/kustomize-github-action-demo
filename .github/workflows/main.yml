@@ -23,7 +23,7 @@ jobs:
       - run: |
           mkdir -p rendered
           touch rendered/render.yaml         
-          kustomize build kustomize/ > kustomize/rendered/temp.yaml  
+          kustomize build kustomize/ > manifests/temp.yaml
       - name: 'Yaml-lint'
         uses: karancode/yamllint-github-action@v2.0.0
         with:
