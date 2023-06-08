@@ -1,20 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: frontend-deployment
+  name: nginx-deployment
 spec:
-    selector:
+  selector:
     matchLabels:
-      app: frontend-deployment
-    template:
+      app: nginx
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template:
     metadata:
       labels:
-        app: frontend-deployment
+        app: nginx
     spec:
       containers:
-      - name: app
-        image: foo/bar:latest
+      - name: nginx
+        image: nginx:1.14.2
         ports:
-        - name: http
-          containerPort: 8080
-          protocol: TCP
+        - containerPort: 80
