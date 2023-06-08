@@ -1,21 +1,57 @@
-name: 'Kustomize GitHub Actions'
+name: 'Render manifest'
 on:
-  - pull_request
+  pull_request:
+  workflow_dispatch:
 jobs:
   kustomize:
     name: 'Kustomize'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@master
-      - name: 'Kustomize Build'
-        uses: karancode/kustomize-github-action@master
+        uses: actions/checkout@v2
+      - uses: yokawasa/action-setup-kube-tools@v0.9.3
         with:
-          kustomize_version: '3.0.0'
-          kustomize_build_dir: '.'
-          kustomize_comment: true
-          kustomize_output_file: "gitops/rendered.yaml"
-          kustomize_build_options: "--load_restrictor none"
-          enable_alpha_plugins: true
+          setup-tools: |
+            kubectl
+            helm
+            kustomize
+            skaffold
+          kubectl: '1.17.1'
+          helm: '3.5.2'
+          kustomize: '4.5.4'
+          skaffold: '1.20.0'
+      - run: |
+          mkdir -p rendered
+          touch rendered/render.yaml         
+          kustomize build kustomize/ > kustomize/rendered/temp.yaml  
+      - name: 'Yaml-lint'
+        uses: karancode/yamllint-github-action@v2.0.0
+        with:
+          yamllint_file_or_dir: '.yamllint'
+          yamllint_config_filepath: '.yamllint'
+          yamllint_strict: false
+          yamllint_comment: false
         env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Verify Changed files
+        uses: tj-actions/verify-changed-files@v13
+        id: verify-changed-files
+        with:
+          files: |
+            kustomize/rendered/spinnakerservice.yaml
+            kustomize/rendered/temp.yaml
+      - name: Run step only when any of the above files change.
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        run: |
+          echo "Changed files: ${{ steps.verify-changed-files.outputs.changed_files }}"
+          mv kustomize/rendered/temp.yaml  kustomize/rendered/spinnakerservice.yaml
+        # Outputs: "Changed files: new.txt test_directory/new.txt"
+      - name: Create commit comment
+        uses: peter-evans/commit-comment@v2
+        with:
+          body: |
+            :rocket: Please find the changes between the current to the new manifest below: 
+            ${{ env.diffoutput }}               
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Apply rendered kustomize build
