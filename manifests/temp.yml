@@ -16,5 +16,5 @@ apiVersion: apps/v1
         image: foo/bar:latest
         ports:
         - name: http
-          containerPort: 8081
+          containerPort: 8080
           protocol: TCP
