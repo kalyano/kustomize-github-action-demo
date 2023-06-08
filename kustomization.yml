@@ -1,0 +1,7 @@
+resources:
+- simple-deploy.yml
+
+# Apply the patches top down order
+patchesStrategicMerge:
+- patch1.yml
+- patch2.yml
