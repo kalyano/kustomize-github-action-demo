@@ -1,8 +1,8 @@
 apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    name: frontend-deployment
-  spec:
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
     selector:
     matchLabels:
       app: frontend-deployment
@@ -16,5 +16,5 @@ apiVersion: apps/v1
         image: foo/bar:latest
         ports:
         - name: http
-          containerPort: 8081
+          containerPort: 8090
           protocol: TCP
