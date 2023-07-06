@@ -2,8 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx-deployment-test-4
-  labels:
-    deploymentType: kals-demo
 spec:
   selector:
     matchLabels:
