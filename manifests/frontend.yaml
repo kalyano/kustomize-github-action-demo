@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment-test-4
+  name: nginx-deployment-test-5
 spec:
   selector:
     matchLabels:
