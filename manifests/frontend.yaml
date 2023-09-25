@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment-csx
+  name: nginx-deployment-csx-local
 spec:
   selector:
     matchLabels:
